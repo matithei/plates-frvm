@@ -1,0 +1,24 @@
+version: '3'
+services:
+  api:
+    build: ./api
+    ports:
+      - "3000:3000"
+    volumes:
+      - my_volume:/app/uploads
+    networks:
+      - my_net
+  phantom:
+    build: ./phantom
+    volumes:
+      - my_volume:/api/uploads
+    ports:
+      - "80:80"
+    networks:
+      - my_net
+
+volumes:
+  my_volume:
+networks:
+  my_net:
+    driver: bridge
