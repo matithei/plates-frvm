@@ -1,0 +1,48 @@
+<div class="container row pt-4">
+    <div class="col-12">
+        <div class="row">
+            <div class="col-12 col-md-6 col-lg-5">
+                <div class="card ">
+                    <div class="card-header">
+                        Subir Imagen
+                    </div>
+                    <div class="card-body">
+                        <form [formGroup]="uploadForm" (ngSubmit)="onSubmit()">
+                            <div class="form-group">
+                                <label for="image">Seleccionar Imagen:</label>
+                                <input type="file" id="image" formControlName="image" accept="image/*"
+                                    (change)="onFileSelected($event)">
+                            </div>
+                            <button type="submit" class="btn btn-primary w-100 mt-3" [disabled]="uploadForm.invalid">Procesar</button>
+                        </form>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-12 col-md-6 col-lg-5" *ngIf="uploadResponse!=null">
+        <h5>
+            Estrategia : {{uploadResponse.strategy}}
+        </h5>
+        <div *ngIf="uploadResponse.type=='new'" class="card" style="background:url('assets/white.png');background-repeat: no-repeat;
+    background-position-x: center;
+    background-size: cover;
+    padding-top: 0.5em;
+    font-size: 3.5em;    text-align: center;">
+            {{uploadResponse.result}}
+        </div>
+        <div *ngIf="uploadResponse.type=='old'" class="card " style="background:url('assets/black.png');background-repeat: no-repeat;
+                        background-position-x: center;
+                        background-size: cover;
+                        padding-top: 0.5em;
+                        font-size: 3.5em;    text-align: center;">
+                        <div style="background-color: black;color: white;margin-right: 0.5em;
+    margin-left: 0.5em;" class="mb-3">
+            {{uploadResponse.result}}
+        </div>
+
+       
+    </div>
+
+</div>

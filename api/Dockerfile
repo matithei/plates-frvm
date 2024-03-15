@@ -1,5 +1,5 @@
 # Usa una imagen base de Node.js
-FROM node:17
+FROM node:18-alpine
 
 # Establece el directorio de trabajo dentro del contenedor
 WORKDIR /app
@@ -12,6 +12,8 @@ RUN npm install
 
 # Copia el resto de los archivos de la aplicación al directorio de trabajo
 COPY . .
+
+RUN npm run build
 
 # Expone el puerto en el que la API va a estar escuchando
 EXPOSE 3000

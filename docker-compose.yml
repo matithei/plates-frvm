@@ -1,9 +1,20 @@
 version: '3'
 services:
+  nginx:
+    build: ./nginx
+    depends_on:
+      - app
+      - api
+    ports:
+      - "80:80"
+    networks:
+      - my_net
+  app:
+    build: ./recognizer
+    networks:
+      - my_net
   api:
     build: ./api
-    ports:
-      - "3000:3000"
     volumes:
       - my_volume:/app/uploads
     networks:
@@ -12,8 +23,6 @@ services:
     build: ./phantom
     volumes:
       - my_volume:/api/uploads
-    ports:
-      - "80:80"
     networks:
       - my_net
 
