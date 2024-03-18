@@ -3,16 +3,38 @@ const app = express();
 const cors = require("cors");
 const util = require("util");
 const exec = util.promisify(require("child_process").exec);
-
+const allSettled =
+  ((promises) =>
+    Promise.all(
+      promises.map((p) =>
+        p
+          .then((value) => ({
+            status: "fulfilled",
+            value,
+          }))
+          .catch((reason) => ({
+            status: "rejected",
+            reason,
+          }))
+      )
+    ));
 async function freeStrategy(imagePath) {
   const regions = ["us", "au", "eu", "auwide", "kr", "sg", "mx", "br"];
-  for (let i = 0; i < regions.length; i++) {
-    const region = regions[i];
-    const response = await executeRec(region, imagePath);
-    if (response.length > 0) {
-      return response
-    }
-  }
+  const responseSettled = (
+    await allSettled(regions.map((region) => executeRec(region, imagePath)))
+  )
+    .filter((p) => p.status === "fulfilled")
+    .map((result) => result.value)
+  let response = []
+  responseSettled.forEach((r) => {
+    r.forEach(r2 => {
+      response.push(r2)
+    })
+  });
+  console.log(response)
+ if (response.length > 0) {
+   return response;
+ }
   return [];
 }
 
