@@ -85,14 +85,17 @@ export class UploadImageComponent implements OnInit {
           const formatted = format(this.uploadResponse.result);
           this.uploadResponse.result = formatted.result;
           this.uploadResponse.type = formatted.type;
+          this.loading = false;
         },
         (error) => {
           console.error('Error al subir la imagen:', error);
+          this.loading = false;
         }
       );
     } catch (error: any) {
+       this.loading = false;
       alert(error?.message ?? 'Process error');
     }
-    this.loading = false;
+   
   }
 }
