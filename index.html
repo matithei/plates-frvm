@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    
+</head>
+<body>
+    <input type="file" accept="image/*" onchange="handleImageUpload(event);">
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/browser-image-compression@2.0.1/dist/browser-image-compression.js"></script>
+
+    <script>
+        async function handleImageUpload(event) {
+  
+                const imageFile = event.target.files[0];
+                console.log('originalFile instanceof Blob', imageFile instanceof Blob); // true
+                console.log(`originalFile size ${imageFile.size / 1024 / 1024} MB`);
+
+                const options = {
+                    maxSizeMB: 1,
+                    maxWidthOrHeight: 1024,
+                    useWebWorker: true,
+                    fileType: 'image/jpeg'
+                }
+                console.log(options); // true
+                try {
+                    const compressedFile = await imageCompression(imageFile, options);
+                  
+                    console.log('compressedFile instanceof Blob', compressedFile instanceof Blob); // true
+                    console.log(`compressedFile size ${compressedFile.size / 1024 / 1024} MB`); // smaller than maxSizeMB
+
+                    // Crear un objeto URL para la nueva imagen comprimida
+                    const compressedFileURL = URL.createObjectURL(compressedFile);
+
+                    // Crear un enlace de descarga para la nueva imagen
+                    const downloadLink = document.createElement('a');
+                    downloadLink.href = compressedFileURL;
+                    downloadLink.download = `compressed_${imageFile.name}`;
+
+                    // Agregar el enlace de descarga al DOM
+                    document.body.appendChild(downloadLink);
+
+                    // Simular el clic en el enlace para iniciar la descarga
+                    downloadLink.click();
+
+                    // Limpiar el objeto URL creado
+                    URL.revokeObjectURL(compressedFileURL);
+                } catch (error) {
+                    console.log(error);
+                }
+            }
+
+    </script>
+</body>
+</html>

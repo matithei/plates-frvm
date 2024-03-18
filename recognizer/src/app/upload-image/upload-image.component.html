@@ -13,8 +13,11 @@
                                 <input type="file" id="image" formControlName="image" accept="image/*"
                                     (change)="onFileSelected($event)">
                             </div>
-                            <button type="submit" class="btn btn-primary w-100 mt-3" [disabled]="uploadForm.invalid">Procesar</button>
+                            <button type="submit" class="btn btn-primary w-100 mt-3" [disabled]="uploadForm.invalid" *ngIf="!loading">Procesar</button>
+                            
                         </form>
+                        <div class="spinner-border" role="status" *ngIf="loading">
+                        </div>
                     </div>
 
                 </div>
