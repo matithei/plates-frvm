@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
-import { Component, OnInit } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import {
   FormBuilder,
   FormGroup,
@@ -22,6 +22,15 @@ export class UploadImageComponent implements OnInit {
   uploadForm!: FormGroup;
   uploadResponse: any;
   loading = false;
+  // in the controller
+
+  cameras: MediaDeviceInfo[] = [];
+  selectedCamera: MediaDeviceInfo | null = null;
+  cameraMode = false;
+
+  capturedImage: string = '';
+  @ViewChild('video') videoElement!: ElementRef;
+  @ViewChild('canvas') canvas!: ElementRef;
 
   constructor(private fb: FormBuilder, private http: HttpClient) {}
 
@@ -29,6 +38,10 @@ export class UploadImageComponent implements OnInit {
     this.uploadForm = this.fb.group({
       image: [null, Validators.required],
     });
+    console.log('init');
+    this.listCameras()
+      .then()
+      .catch((e) => console.log(e));
   }
 
   onFileSelected(event: any): void {
@@ -93,9 +106,80 @@ export class UploadImageComponent implements OnInit {
         }
       );
     } catch (error: any) {
-       this.loading = false;
+      this.loading = false;
       alert(error?.message ?? 'Process error');
     }
-   
+  }
+
+  async listCameras() {
+    try {
+      await navigator.mediaDevices.getUserMedia({ video: true });
+      const devices = await navigator.mediaDevices.enumerateDevices();
+      this.cameras = devices.filter((device) => device.kind === 'videoinput');
+    } catch (error) {
+      console.error('Error enumerating devices:', error);
+    }
+  }
+
+  selectCamera(camera: MediaDeviceInfo) {
+    this.selectedCamera = camera;
+    this.startVideo();
+  }
+
+  startVideo() {
+    if (this.selectedCamera) {
+      const constraints = {
+        video: { deviceId: this.selectedCamera.deviceId },
+      };
+
+      navigator.mediaDevices
+        .getUserMedia(constraints)
+        .then((stream) => {
+          const videoElement = document.getElementById(
+            'selected-video'
+          ) as HTMLVideoElement;
+          if (videoElement) {
+            videoElement.srcObject = stream;
+          }
+        })
+        .catch((err) => {
+          console.error('Error accessing camera:', err);
+        });
+    }
+  }
+
+  capture() {
+    if (this.videoElement && this.canvas) {
+      const video = this.videoElement.nativeElement;
+      const canvas = this.canvas.nativeElement;
+      const context = canvas.getContext('2d');
+      const videoWidth = video.videoWidth;
+      const videoHeight = video.videoHeight;
+
+      canvas.width = videoWidth;
+      canvas.height = videoHeight;
+
+      // Calcular las coordenadas y dimensiones del recorte
+      const cropX = videoWidth * 0.5 - videoWidth * 0.2; // left: 50%, width: 40%
+      const cropY = videoHeight * 0.8; // top: 80%
+      const cropWidth = videoWidth * 0.4;
+      const cropHeight = videoHeight * 0.15;
+
+      // Dibujar la imagen recortada en el lienzo
+      context.drawImage(
+        video,
+        cropX,
+        cropY,
+        cropWidth,
+        cropHeight,
+        0,
+        0,
+        cropWidth,
+        cropHeight
+      );
+
+      // Convertir el lienzo a un Data URL
+      this.capturedImage = canvas.toDataURL('image/png');
+    }
   }
 }

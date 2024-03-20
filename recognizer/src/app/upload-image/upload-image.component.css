@@ -1,0 +1,10 @@
+.plate  {
+    position: absolute;
+    top: 80%; /* Centrar verticalmente */
+    left: 50%; /* Centrar horizontalmente */
+    transform: translate(-50%, -50%); /* Centrar completamente */
+    background-color: #f0f0f0; /* Color de fondo para visualización */
+    width: 40%; /* Ancho relativo al contenedor */
+    height: 15%;
+    background: rgba(255,255,255,0.4);
+  }
